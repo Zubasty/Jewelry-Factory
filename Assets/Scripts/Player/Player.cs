@@ -15,6 +15,8 @@ public class Player : MonoBehaviour
 
     public int Money => _money.Value + _backpack.CountMoney;
 
+    public bool HaveResourcesInArms => _arms.HaveResources;
+
     public void AddMoney(int count) => _money.AddMoney(count);
 
     public void Pay(int count) 
@@ -25,7 +27,6 @@ public class Player : MonoBehaviour
 
     public void AddMoney(int count, WadMoney wad)
     {
-        _backpack.Add(wad);
         AddMoney(count);
     }
 
@@ -34,9 +35,19 @@ public class Player : MonoBehaviour
         _backpack.Add(wadMoney);
     }
 
-    public void TakeInArms(IResource resource)
+    public void TakeInArms(RockAbstract rock)
     {
-        _arms.Add(resource);
+        _arms.Add(rock);
+    }
+
+    public RockAbstract GetFromArms()
+    {
+        return _arms.GetRock();
+    }
+
+    public RockAbstract ThrowFromArms()
+    {
+        return _arms.GiveRock();
     }
 
     private void Awake()

@@ -9,7 +9,7 @@ public class PointForResource : MonoBehaviour
 
     public int CountRecources => _resources.Count;
 
-    public int Tier { get; private set; }
+    public int Tier => _resources.Count - 1;
 
     public IResource GetResource(int index) => _resources[index];
 
@@ -26,16 +26,14 @@ public class PointForResource : MonoBehaviour
     {
         _resources = new List<IResource>();
         _offsetY = offsetY;
-        Tier = 0;
     }
 
-    public void AddResource(IResource resource)
+    public void Add(IResource resource)
     {
         _resources.Add(resource);
         Vector3 newPosition = new Vector3(transform.position.x, transform.position.y + _offsetY * Tier, transform.position.z);
         resource.Install(newPosition, transform);
         resource.Used += LoseResource;
-        Tier++;
     }
 
     private void LoseResource(IResource resource)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlaceForResources : MonoBehaviour
@@ -23,6 +24,8 @@ public class PlaceForResources : MonoBehaviour
 
     public int CountPoints => _pointsForResource.Count;
 
+    public int CountResources => _pointsForResource.Sum(point => point.CountRecources);
+
     public PointForResource GetPoint(int index) => _pointsForResource[index];
 
     public IResource GetResource() => _pointsForResource[GetIndexForGet()].GetResource();
@@ -31,7 +34,7 @@ public class PlaceForResources : MonoBehaviour
 
     public void Add(IResource resource)
     {
-        _pointsForResource[GetIndexForAdd()].AddResource(resource);
+        _pointsForResource[GetIndexForAdd()].Add(resource);
     }
 
     private int GetIndexForGet()
@@ -43,6 +46,7 @@ public class PlaceForResources : MonoBehaviour
                 return i;
             }
         }
+
         return _pointsForResource.Count - 1;
     }
 
