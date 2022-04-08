@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3451670205894088984}
   - component: {fileID: 3451670205894088987}
   - component: {fileID: 3451670205894088986}
-  - component: {fileID: 7015582017317070576}
+  - component: {fileID: 7799593515688685174}
   m_Layer: 0
   m_Name: 10000dol
   m_TagString: Untagged
@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3451670205894088989}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 5}
+  m_LocalScale: {x: 5, y: 5, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 0}
 --- !u!33 &3451670205894088987
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -82,7 +82,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7015582017317070576
+--- !u!114 &7799593515688685174
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,7 +91,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3451670205894088989}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d48ac5bfb300d6e4e9747ff038d0ffd7, type: 3}
+  m_Script: {fileID: 11500000, guid: 755bd87fea3419f428567698ce3d6805, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _valueMoney: 5

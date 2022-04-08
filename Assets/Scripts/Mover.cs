@@ -30,13 +30,33 @@ public class Mover : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
+    private void InstallAngle()
+    {
+        Vector2 normalizedDirection = new Vector2(_target.Position.x - transform.position.x,
+            _target.Position.z - transform.position.z).normalized;
+
+        if (normalizedDirection.y < 0)
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.x,
+                Mathf.Acos(normalizedDirection.x) * 360 / Mathf.PI, transform.rotation.z));
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.x,
+                180 - Mathf.Acos(normalizedDirection.x) * 360 / Mathf.PI, transform.rotation.z));
+        }
+    }
+
     private IEnumerator Moving()
     {
-        while(Vector3.Distance(transform.position, _target.Position) > _target.Distance)
+        InstallAngle();
+
+        while (Vector3.Distance(transform.position, _target.Position) > _target.Distance)
         {
             _rigidbody.MovePosition(Vector3.MoveTowards(transform.position, _target.Position, _speed * Time.deltaTime));
             yield return null;
         }
+
         Finished?.Invoke(_target);
         _target = null;
         yield return null;

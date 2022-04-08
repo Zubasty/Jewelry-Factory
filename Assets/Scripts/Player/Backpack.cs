@@ -3,62 +3,55 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PlaceForResources))]
+[RequireComponent(typeof(PlaceForWadsMoney))]
 public class Backpack : MonoBehaviour
 {
-    private PlaceForResources _placeForResources;
+    [SerializeField] private float _delay;
+    [SerializeField] private Vector3 _resultAngle;
+    [SerializeField] private float _speedInstalling;
 
-    public int CountMoney
+    private PlaceForWadsMoney _place;
+    private int _countCall = 0; // попахивает нарушением зоны ответственности
+
+    public event Action TakedWadsMoney;
+
+    public void TakeWadsMoney(ListWadsMoney wads)
     {
-        get
-        {
-            int count = 0;
-
-            for(int i = 0; i<_placeForResources.CountPoints; i++)
-            {
-                PointForResource point = _placeForResources.GetPoint(i);
-
-                for(int j = 0; j < point.CountRecources; j++)
-                {
-                    if(point.GetResource(j) is WadMoney wad)
-                    {
-                        count += wad.ValueMoney;
-                    }
-                    else
-                    {
-                        throw new InvalidCastException("Откуда в рюкзаке что-то кроме пачек денег?");
-                    }
-                }
-            }
-
-            return count;
-        }
+        StartCoroutine(Folding(wads, new Vector3(_resultAngle.x, _resultAngle.y, 
+            _resultAngle.z - transform.rotation.eulerAngles.y), _speedInstalling));
     }
 
-    public void Add(WadMoney wad) => _placeForResources.Add(wad);
-
-    public int TakeMoney(int value)
+    private IEnumerator Folding(ListWadsMoney wads, Vector3 angle, float speed)
     {
-        int takedValue = 0;
+        int expectedCount = wads.CountWads;
+        _countCall = 0;
+        WaitForSeconds wait = new WaitForSeconds(_delay);
 
-        while (takedValue < value && _placeForResources.HaveResources)
+        while (wads.CountWads > 0)
         {
-            if (_placeForResources.GetResource() is WadMoney wadMoney)
-            {
-                wadMoney.TakeMoney(value - takedValue, out int takedValueFromWad);
-                takedValue += takedValueFromWad;
-            }
-            else
-            {
-                throw new InvalidCastException("Откуда в рюкзаке что-то кроме пачек денег?");
-            }
+            WadMoney lastWad = wads.GiveWadMoney();
+            _place.StartAdd(lastWad, angle, speed);
+            lastWad.Installed += (wad) => OnInstalled(wad, expectedCount);
+            yield return wait;
         }
 
-        return takedValue;
+        yield return null;
+    }
+
+    private void OnInstalled(WadMoney wad, int expectedCount)
+    {
+        _countCall++;
+
+        if (_countCall == expectedCount)
+        {
+            TakedWadsMoney?.Invoke();
+        }
+
+        wad.Installed -= (wad) => OnInstalled(wad, expectedCount);
     }
 
     private void Awake()
     {
-        _placeForResources = GetComponent<PlaceForResources>();
+        _place = GetComponent<PlaceForWadsMoney>();
     }
 }

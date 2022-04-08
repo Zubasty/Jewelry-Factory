@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Mover))]
@@ -6,55 +7,45 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private Backpack _backpack;
-    [SerializeField] private Arms _arms;
 
     private Mover _mover;
     private Caster _caster;
-    private Money _money;
     private bool _isBusy;
 
-    public int Money => _money.Value + _backpack.CountMoney;
+    public event Action<Player> TakedWadsMoney;
 
-    public bool HaveResourcesInArms => _arms.HaveResources;
-
-    public void AddMoney(int count) => _money.AddMoney(count);
-
-    public void Pay(int count) 
+    public void TakeWadsMoney(ListWadsMoney listWadsMoney)
     {
-        int takedMoney = _backpack.TakeMoney(count);
-        _money.Pay(count - takedMoney);
+        _backpack.TakeWadsMoney(listWadsMoney);
+        _backpack.TakedWadsMoney += OnTakedWadsMoney;
     }
 
-    public void AddMoney(int count, WadMoney wad)
+    private void OnTakedWadsMoney()
     {
-        AddMoney(count);
+        _backpack.TakedWadsMoney -= OnTakedWadsMoney;
+        TakedWadsMoney?.Invoke(this);
     }
 
-    public void TakeInBackpack(WadMoney wadMoney)
+    private void OnFinished(TargetCaster target)
     {
-        _backpack.Add(wadMoney);
+        if (target.TryGetComponent(out IObjectInteractive objectInteractive))
+        {
+            _isBusy = true;
+            objectInteractive.EndedInterection += OnEndedInteraction;
+            objectInteractive.Interection(this);
+        }
     }
 
-    public void TakeInArms(RockAbstract rock)
+    private void OnEndedInteraction(IObjectInteractive owner)
     {
-        _arms.Add(rock);
-    }
-
-    public RockAbstract GetFromArms()
-    {
-        return _arms.GetRock();
-    }
-
-    public RockAbstract ThrowFromArms()
-    {
-        return _arms.GiveRock();
+        owner.EndedInterection -= OnEndedInteraction;
+        _isBusy = false;
     }
 
     private void Awake()
     {
         _mover = GetComponent<Mover>();
         _caster = GetComponent<Caster>();
-        _money = new Money();
         _isBusy = false;
     }
 
@@ -76,21 +67,5 @@ public class Player : MonoBehaviour
         {
             _mover.SetTarget(target);
         }
-    }
-
-    private void OnFinished(TargetCaster target)
-    {
-        if (target.TryGetComponent(out IObjectInteractive objectInteractive))
-        {
-            _isBusy = true;
-            objectInteractive.EndedInterection += OnEndedInteraction;
-            objectInteractive.Interaction(this);
-        }
-    }
-
-    private void OnEndedInteraction(IObjectInteractive owner)
-    {
-        owner.EndedInterection -= OnEndedInteraction;
-        _isBusy = false;
     }
 }
