@@ -2,22 +2,35 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Mover))]
+[RequireComponent(typeof(PlayerMover))]
 [RequireComponent(typeof(Caster))]
 public class Player : MonoBehaviour
 {
     [SerializeField] private Backpack _backpack;
 
-    private Mover _mover;
+    private PlayerMover _mover;
     private Caster _caster;
     private bool _isBusy;
 
     public event Action<Player> TakedWadsMoney;
+    public event Action<Player> BoughtCashRegsiter;
+
+    public void Buy(SiteCashRegister site)
+    {
+        site.TakeWadsMoney(_backpack);
+        site.BoughtCashRegsiter += OnBoughtCashRegsiter;
+    }
 
     public void TakeWadsMoney(ListWadsMoney listWadsMoney)
     {
         _backpack.TakeWadsMoney(listWadsMoney);
         _backpack.TakedWadsMoney += OnTakedWadsMoney;
+    }
+
+    private void OnBoughtCashRegsiter(SiteCashRegister site)
+    {
+        site.BoughtCashRegsiter -= OnBoughtCashRegsiter;
+        BoughtCashRegsiter?.Invoke(this);
     }
 
     private void OnTakedWadsMoney()
@@ -44,7 +57,7 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        _mover = GetComponent<Mover>();
+        _mover = GetComponent<PlayerMover>();
         _caster = GetComponent<Caster>();
         _isBusy = false;
     }

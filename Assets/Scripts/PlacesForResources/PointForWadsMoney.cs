@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PointForWadsMoney : MonoBehaviour
@@ -9,10 +10,12 @@ public class PointForWadsMoney : MonoBehaviour
     private List<WadMoney> _queueWadsMoney;
     private float _offsetY;
 
-    private Vector3 ActualPosition => new Vector3(transform.position.x,
+    public Vector3 ActualPosition => new Vector3(transform.position.x,
             transform.position.y + _offsetY * CountWads, transform.position.z);
 
     public int CountWads => _wadsMoney.Count + _queueWadsMoney.Count;
+
+    public int CountMoney => _wadsMoney.Sum(wad => wad.Amount) + _queueWadsMoney.Sum(wad => wad.Amount);
 
     public WadMoney GiveWadMoney()
     {
@@ -31,25 +34,24 @@ public class PointForWadsMoney : MonoBehaviour
 
     public void Add(WadMoney wadMoney) => Add(wadMoney, ActualPosition);
 
-    public void StartInstall(WadMoney wadMoney, Vector3 angle, float speed)
+    public void AddInQueue(WadMoney wad)
     {
-        wadMoney.StartInstall(ActualPosition, angle, speed);
-        wadMoney.Installed += (wad) => EndInstall(wad);
-        _queueWadsMoney.Add(wadMoney);
+        Vector3 position = ActualPosition;
+        wad.Installed += (wad) => OnInstalled(wad, position);
+        _queueWadsMoney.Add(wad);
+    }
+
+    private void OnInstalled(WadMoney wad, Vector3 position)
+    {
+        Add(wad, position);
+        _queueWadsMoney.Remove(wad);
+        wad.Installed -= (wad) => OnInstalled(wad, position);
     }
 
     private void Add(WadMoney wadMoney, Vector3 position)
     {
+        _wadsMoney.Add(wadMoney);
         wadMoney.transform.parent = transform;
         wadMoney.InstallPosition(position);
-        _wadsMoney.Add(wadMoney);
-    }
-
-    private void EndInstall(WadMoney wadMoney)
-    {
-        wadMoney.transform.parent = transform;
-        _queueWadsMoney.Remove(wadMoney);
-        _wadsMoney.Add(wadMoney);
-        wadMoney.Installed -= (wad) => EndInstall(wad);
     }
 }

@@ -11,6 +11,10 @@ public class PlaceForWadsMoney : MonoBehaviour
 
     public int CountWads => _points.Sum(point => point.CountWads);
 
+    public int CountMoney => _points.Sum(point => point.CountMoney);
+
+    public Vector3 ActualPosition => PointForAdd.ActualPosition;
+
     private PointForWadsMoney PointForAdd
     {
         get
@@ -42,9 +46,26 @@ public class PlaceForWadsMoney : MonoBehaviour
         }
     }
 
+    public void Init(List<WadMoney> wads)
+    {
+
+    }
+
     public WadMoney GiveWadMoney()
     {
         return PointForGive.GiveWadMoney();
+    }
+
+    public Queue<WadMoney> GiveAllWadsMoney()
+    {
+        Queue<WadMoney> givenWads = new Queue<WadMoney>();
+
+        while (CountWads > 0)
+        {
+            givenWads.Enqueue(GiveWadMoney());
+        }
+
+        return givenWads;
     }
 
     public void Install(WadMoney wad)
@@ -52,9 +73,9 @@ public class PlaceForWadsMoney : MonoBehaviour
         PointForAdd.Add(wad);
     }
 
-    public void StartAdd(WadMoney wad, Vector3 angle, float speed)
+    public void StartAdd(WadMoney wad)
     {
-        PointForAdd.StartInstall(wad, angle, speed);
+        PointForAdd.AddInQueue(wad);
     }
 
     private void Awake()

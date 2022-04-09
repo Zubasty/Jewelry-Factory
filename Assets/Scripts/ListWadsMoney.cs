@@ -15,7 +15,7 @@ public class ListWadsMoney : MonoBehaviour, IObjectInteractive
 
     public int CountWads => _place.CountWads;
 
-    public WadMoney GiveWadMoney() => _place.GiveWadMoney();
+    public PlaceForWadsMoney Place => _place;
 
     public void Interection(Player player)
     {

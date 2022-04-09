@@ -1,57 +1,58 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(PlaceForWadsMoney))]
+[RequireComponent(typeof(TransmitterInBackpack))]
+[RequireComponent(typeof(Mover))]
 public class Backpack : MonoBehaviour
 {
-    [SerializeField] private float _delay;
-    [SerializeField] private Vector3 _resultAngle;
-    [SerializeField] private float _speedInstalling;
-
+    private TransmitterInBackpack _transmitter;
+    private Mover _mover;
     private PlaceForWadsMoney _place;
-    private int _countCall = 0; // попахивает нарушением зоны ответственности
 
     public event Action TakedWadsMoney;
 
+    public int CountMoney => _place.CountMoney;
+
     public void TakeWadsMoney(ListWadsMoney wads)
     {
-        StartCoroutine(Folding(wads, new Vector3(_resultAngle.x, _resultAngle.y, 
-            _resultAngle.z - transform.rotation.eulerAngles.y), _speedInstalling));
+        _transmitter.Transfer(_mover, wads.Place.GiveAllWadsMoney());
     }
 
-    private IEnumerator Folding(ListWadsMoney wads, Vector3 angle, float speed)
+    public Queue<WadMoney> GiveWadsMoney(int price)
     {
-        int expectedCount = wads.CountWads;
-        _countCall = 0;
-        WaitForSeconds wait = new WaitForSeconds(_delay);
+        Queue<WadMoney> givenWads = new Queue<WadMoney>();
 
-        while (wads.CountWads > 0)
+        while (givenWads.Sum(wad => wad.Amount) < price)
         {
-            WadMoney lastWad = wads.GiveWadMoney();
-            _place.StartAdd(lastWad, angle, speed);
-            lastWad.Installed += (wad) => OnInstalled(wad, expectedCount);
-            yield return wait;
+            givenWads.Enqueue(_place.GiveWadMoney());
         }
 
-        yield return null;
+        return givenWads;
     }
 
-    private void OnInstalled(WadMoney wad, int expectedCount)
+    private void OnTransferred()
     {
-        _countCall++;
-
-        if (_countCall == expectedCount)
-        {
-            TakedWadsMoney?.Invoke();
-        }
-
-        wad.Installed -= (wad) => OnInstalled(wad, expectedCount);
+        TakedWadsMoney?.Invoke();
     }
 
     private void Awake()
     {
         _place = GetComponent<PlaceForWadsMoney>();
+        _transmitter = GetComponent<TransmitterInBackpack>();
+        _mover = GetComponent<Mover>();
+        _transmitter.Init(_place);
+    }
+
+    private void OnEnable()
+    {
+        _transmitter.Transferred += OnTransferred;
+    }
+
+    private void OnDisable()
+    {
+        _transmitter.Transferred -= OnTransferred;
     }
 }

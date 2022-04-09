@@ -5,33 +5,26 @@ using UnityEngine;
 
 public class WadMoney : MonoBehaviour
 {
+    [SerializeField] private int _amount;
+
     public event Action<WadMoney> Installed;
+
+    public int Amount => _amount;
 
     public void InstallPosition(Vector3 targetPosition)
     {
         transform.position = targetPosition;
     }
 
-    public void StartInstall(Vector3 targetPosition, Vector3 angle, float speed)
+    public void Install(Vector3 position, Vector3 angle)
     {
-        StartCoroutine(Installing(targetPosition, angle, speed));
+        InstallPosition(position);
+        transform.rotation = Quaternion.Euler(angle);
+        Installed?.Invoke(this);
     }
 
-    private IEnumerator Installing(Vector3 targetPosition, Vector3 angle, float speed)
+    public void StartInstall(Mover mover, Vector3 targetPosition, Vector3 angle)
     {
-        Vector3 startPosition = transform.position;
-        Vector3 startAngle = transform.rotation.eulerAngles;
-
-        while (transform.position != targetPosition)
-        {
-            InstallPosition(Vector3.MoveTowards(transform.position, targetPosition, Time.deltaTime * speed));
-            float percent = 1 - Vector3.Distance(transform.position, targetPosition)/
-                Vector3.Distance(startPosition, targetPosition);
-            transform.rotation = Quaternion.Euler(Vector3.Lerp(startAngle, angle, percent));
-            yield return null;
-        }
-
-        Installed?.Invoke(this);
-        yield return null;
+        mover.StartMove(this, targetPosition, angle);
     }
 }
