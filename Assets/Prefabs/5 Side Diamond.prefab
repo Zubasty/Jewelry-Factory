@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 222880631283641941}
   - component: {fileID: 246814429007076373}
   - component: {fileID: 236535048642528939}
-  - component: {fileID: 3772090601064747890}
+  - component: {fileID: 2347898591538774904}
   m_Layer: 0
   m_Name: 5 Side Diamond
   m_TagString: Untagged
@@ -82,7 +82,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &3772090601064747890
+--- !u!114 &2347898591538774904
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -91,7 +91,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 223610690851293509}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3bcee4e1672508499b4b195f25db2d1, type: 3}
+  m_Script: {fileID: 11500000, guid: 68a18734747b7674d86dd7d9d0bc6256, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speedMoving: 50
+  _price: 5

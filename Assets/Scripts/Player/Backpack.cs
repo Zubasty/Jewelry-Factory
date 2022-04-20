@@ -1,58 +1,76 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-[RequireComponent(typeof(PlaceForWadsMoney))]
-[RequireComponent(typeof(TransmitterInBackpack))]
+[RequireComponent(typeof(PlaceForResource))]
+[RequireComponent(typeof(TransmitterPlace))]
 [RequireComponent(typeof(Mover))]
 public class Backpack : MonoBehaviour
 {
-    private TransmitterInBackpack _transmitter;
+    private TransmitterPlace _transmitter;
     private Mover _mover;
-    private PlaceForWadsMoney _place;
+    private PlaceForResource _place;
 
     public event Action TakedWadsMoney;
 
-    public int CountMoney => _place.CountMoney;
-
-    public void TakeWadsMoney(ListWadsMoney wads)
+    public int CountMoney
     {
-        _transmitter.Transfer(_mover, wads.Place.GiveAllWadsMoney());
-    }
-
-    public Queue<WadMoney> GiveWadsMoney(int price)
-    {
-        Queue<WadMoney> givenWads = new Queue<WadMoney>();
-
-        while (givenWads.Sum(wad => wad.Amount) < price)
+        get
         {
-            givenWads.Enqueue(_place.GiveWadMoney());
+            int count = 0;
+
+            for(int i = 0; i < _place.Resources.Count; i++)
+            {
+                if(_place.Resources[i] is WadMoney wad)
+                    count += wad.Amount;
+                else
+                    throw new InvalidCastException("Откуда в рюкзаке что-то кроме пачек денег?");
+            }
+
+            return count;
         }
-
-        return givenWads;
-    }
-
-    private void OnTransferred()
-    {
-        TakedWadsMoney?.Invoke();
     }
 
     private void Awake()
     {
-        _place = GetComponent<PlaceForWadsMoney>();
-        _transmitter = GetComponent<TransmitterInBackpack>();
+        _place = GetComponent<PlaceForResource>();
+        _transmitter = GetComponent<TransmitterPlace>();
         _mover = GetComponent<Mover>();
-        _transmitter.Init(_place);
+        _transmitter.Init(_mover, _place);
     }
 
     private void OnEnable()
     {
-        _transmitter.Transferred += OnTransferred;
+        _transmitter.Transferred += () => TakedWadsMoney?.Invoke();
     }
 
     private void OnDisable()
     {
-        _transmitter.Transferred -= OnTransferred;
+        _transmitter.Transferred -= () => TakedWadsMoney?.Invoke();
+    }
+
+    public void TakeWadsMoney(ListWadsMoney listWadsMoney) => _transmitter.Transfer(listWadsMoney.Place.GiveResources());
+
+    public Queue<IResource> GiveWadsMoney(int price)
+    {
+        Queue<IResource> givenWads = new Queue<IResource>();
+        int money = 0;
+
+        while (money < price)
+        {
+            IResource resource = _place.GiveResources(1).Dequeue();
+
+            if(resource is WadMoney wad)
+            {
+                givenWads.Enqueue(resource);
+                money += wad.Amount;
+            }
+            else
+            {
+                throw new InvalidCastException("Откуда в рюкзаке что-то кроме пачек денег?");
+            }
+        }
+
+        return givenWads;
     }
 }

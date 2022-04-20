@@ -1,59 +1,82 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class TransmitterAbstract : MonoBehaviour
 {
     [SerializeField] private float _delay;
+    [SerializeField] private bool _isTakeAngle;
+    [SerializeField] private Vector3 _resultAngle;
 
-    private int _countCall;
+    private Mover _mover;
+    private float _timeBeforeStartMove;
+    private Queue<IResource> _resources;
+    private List<IResource> _resourcesMoving;
 
-    protected Action<WadMoney> ActionAfterStartInstall;
+    protected Action<IResource> ActionAfterStartInstall;
 
-    public event Action<WadMoney> Installed;
+    public event Action<IResource> Installed;
     public event Action Transferred;
 
     protected abstract Vector3 ActualPosition { get; }
-    protected abstract Vector3? ResultAngle { get; }
+
+    protected Vector3? Angle
+    {
+        get
+        {
+            if (_isTakeAngle)
+                return _resultAngle + transform.rotation.eulerAngles;
+            else
+                return null;
+        }
+    } 
 
     protected float Delay => _delay;
 
-    public void Transfer(Mover mover, Queue<WadMoney> wads)
+    public bool IsFree => _resources.Count == 0 && _resourcesMoving.Count == 0;
+
+    private void Awake()
     {
-        StartCoroutine(Transfering(mover, wads, Delay));
+        _resources = new Queue<IResource>();
+        _resourcesMoving = new List<IResource>();
+        _timeBeforeStartMove = 0;
     }
 
-    private IEnumerator Transfering(Mover mover, Queue<WadMoney> wads, float delay)
+    private void Update()
     {
-        int expectedCount = wads.Count;
-        _countCall = 0;
-        WaitForSeconds wait = new WaitForSeconds(delay);
+        _timeBeforeStartMove = Mathf.Max(0, _timeBeforeStartMove - Time.deltaTime);
 
-        while (wads.Count > 0)
+        if(_timeBeforeStartMove == 0)
         {
-            WadMoney lastWad = wads.Dequeue();
-
-            if(ResultAngle.HasValue)
-                lastWad.StartInstall(mover, ActualPosition, ResultAngle.Value);
-            else
-                lastWad.StartInstall(mover, ActualPosition, lastWad.transform.rotation.eulerAngles);
-
-            ActionAfterStartInstall?.Invoke(lastWad);
-            lastWad.Installed += (wad) => EndTransfer(wad, expectedCount);
-            yield return wait;
+            if (_resources.Count > 0)
+            {
+                IResource resource = _resources.Dequeue();
+                resource.StartInstall(_mover, ActualPosition, Angle.HasValue ? 
+                    Angle.Value : resource.Angle);
+                ActionAfterStartInstall?.Invoke(resource);
+                resource.Installed += EndTransfer;
+                _resourcesMoving.Add(resource);
+                _timeBeforeStartMove = _delay;
+            }
         }
 
-        yield return null;
     }
 
-    private void EndTransfer(WadMoney wad, int expectedCount)
-    {
-        _countCall++;
-        Installed?.Invoke(wad);
-        wad.Installed -= (wad) => EndTransfer(wad, expectedCount);
+    public void Init(Mover mover) => _mover = mover;
 
-        if (_countCall == expectedCount)
+    public void Transfer(Queue<IResource> resources)
+    {
+        while(resources.Count > 0)
+            _resources.Enqueue(resources.Dequeue());
+    }
+
+    private void EndTransfer(IResource resource)
+    {
+        _resourcesMoving.Remove(resource);
+        resource.Installed -= EndTransfer;
+        Installed?.Invoke(resource);
+
+        if (IsFree)
         {
             Transferred?.Invoke();
         }

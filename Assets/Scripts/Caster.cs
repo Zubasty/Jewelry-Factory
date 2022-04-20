@@ -12,6 +12,7 @@ public class Caster : MonoBehaviour
                 return true;
             }
         }
+
         target = null;
         return false;
     }
