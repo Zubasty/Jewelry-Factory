@@ -12,7 +12,6 @@ public class Player : MonoBehaviour
 
     private PlayerMover _mover;
     private Caster _caster;
-    private bool _isBusy;
 
     public event Action<Player> TakedWadsMoney;
     public event Action<Player> BoughtCashRegsiter;
@@ -22,6 +21,10 @@ public class Player : MonoBehaviour
     public bool IsMove => _mover.IsMove;
 
     public bool HaveRocksInArms => _arms.HaveRocks;
+
+    public int MoneyInBackpack => _backpack.CountMoney;
+
+    public bool IsBusy { get; private set; }
 
     public IRock LastRockInArms => _arms.GetLastRock();
 
@@ -33,7 +36,7 @@ public class Player : MonoBehaviour
     {
         _mover = GetComponent<PlayerMover>();
         _caster = GetComponent<Caster>();
-        _isBusy = false;
+        IsBusy = false;
     }
 
     private void OnEnable()
@@ -50,10 +53,16 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) &&
             _caster.TryGetTarget(Camera.main.ScreenPointToRay(Input.mousePosition), out TargetCaster target) &&
-            _isBusy == false)
+            IsBusy == false)
         {
             _mover.SetTarget(target);
         }
+    }
+
+    public void StopForInteraction(IObjectInteractive objectInteractive) 
+    {
+        _mover.StopMove();
+        StartInteraction(objectInteractive);
     }
 
     public void Buy(SiteCashRegister site)
@@ -104,19 +113,27 @@ public class Player : MonoBehaviour
         TakedWadsMoney?.Invoke(this);
     }
 
+    private void StartInteraction(IObjectInteractive objectInteractive)
+    {
+        if (IsBusy)
+            throw new Exception($"Игрок занят и не может начать взаимодействие с объектом {nameof(objectInteractive)}");
+
+        IsBusy = true;
+        objectInteractive.EndedInterection += OnEndedInteraction;
+        objectInteractive.Interection(this);
+    }
+
     private void OnFinished(TargetCaster target)
     {
         if (target.TryGetComponent(out IObjectInteractive objectInteractive))
         {
-            _isBusy = true;
-            objectInteractive.EndedInterection += OnEndedInteraction;
-            objectInteractive.Interection(this);
+            StartInteraction(objectInteractive);
         }
     }
 
     private void OnEndedInteraction(IObjectInteractive owner)
     {
         owner.EndedInterection -= OnEndedInteraction;
-        _isBusy = false;
+        IsBusy = false;
     }
 }

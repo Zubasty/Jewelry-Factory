@@ -13,6 +13,8 @@ public class PlaceForResource : MonoBehaviour
 
     public Vector3 ActualPosition => PointForAdd.ActualPosition;
 
+    public PointForResource FirstPoint => _points[0];
+
     public IReadOnlyList<IResource> Resources
     {
         get
@@ -26,6 +28,20 @@ public class PlaceForResource : MonoBehaviour
             }
 
             return resources;
+        }
+    }
+
+    private PointForResource PointForAddWithoutQueue
+    {
+        get
+        {
+            for (int i = 0; i < _points.Count - 1; i++)
+            {
+                if (_points[i + 1].CountResources < _points[i].CountResources)
+                    return _points[i + 1];
+            }
+
+            return _points[0];
         }
     }
 

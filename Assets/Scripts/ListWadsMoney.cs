@@ -32,6 +32,8 @@ public class ListWadsMoney : MonoBehaviour, IObjectInteractive
         player.TakedWadsMoney += OnTakedWadsMoney;
     }
 
+    public bool CanInterection(Player player) => true;
+
     private void OnTakedWadsMoney(Player player)
     {
         player.TakedWadsMoney -= OnTakedWadsMoney;

@@ -12,6 +12,8 @@ public class Arms : MonoBehaviour
     private PlaceForResource _place;
 
     public event Action TakedResources;
+    public event Action DroppedResources;
+    public event Action StartedTakeResources;
 
     public bool HaveRocks => _place.CountResources > 0;
 
@@ -28,6 +30,7 @@ public class Arms : MonoBehaviour
                 throw new InvalidCastException("Откуда в руках что-то кроме камней?");
         }
 
+        DroppedResources?.Invoke();
         return rocks;
     }
 
@@ -43,8 +46,11 @@ public class Arms : MonoBehaviour
             throw new InvalidCastException("Откуда в руках что-то кроме камней?");
     }
 
-    public void TakeResources<T>(PlaceAbstractFactory<T> place) where T : RockAbstract => 
+    public void TakeResources<T>(PlaceAbstractFactory<T> place) where T : RockAbstract 
+    {
+        StartedTakeResources?.Invoke();
         _transmitter.Transfer(place.GiveAllResources());
+    }
 
     private void Awake()
     {

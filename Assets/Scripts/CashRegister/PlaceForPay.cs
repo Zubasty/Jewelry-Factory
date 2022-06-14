@@ -67,4 +67,6 @@ public class PlaceForPay : MonoBehaviour, IObjectInteractive
         player.TakedMoney -= OnTakedMoney;
         EndedInterection?.Invoke(this);
     }
+
+    public bool CanInterection(Player player) => _place.CountResources > 0;
 }

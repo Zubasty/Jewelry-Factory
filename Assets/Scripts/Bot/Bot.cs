@@ -8,7 +8,7 @@ public class Bot : MonoBehaviour
 {
     private const int CountStates = 2;
 
-    [SerializeField] private List<CashRegister> _cashesRegister;
+    [SerializeField] private List<SiteCashRegister> _sitesCashRegister;
     [SerializeField] private float _minTimeThink;
     [SerializeField] private float _maxTimeThink;
     [SerializeField] private float _minOffsetZ;
@@ -18,14 +18,38 @@ public class Bot : MonoBehaviour
     [SerializeField] private float _speed;
     [SerializeField] private int _minCountBuy;
     [SerializeField] private int _maxCountBuy;
-    [SerializeField] private WadMoney _template;
+    [SerializeField] private Vector3 _offsetSpawnMoney;
+    [SerializeField] private WadMoney _templateMoney;
+
+    private List<CashRegister> _cashesRegister;
 
     public event Action StartedMove;
     public event Action StartedIdle;
 
+    private void Awake()
+    {
+        _cashesRegister = new List<CashRegister>();
+    }
+
+    private void OnEnable()
+    {
+        foreach(var siteCashRegister in _sitesCashRegister)
+        {
+            siteCashRegister.MakedCashRegister += (cashRegister) => _cashesRegister.Add(cashRegister);
+        }
+    }
+
     private void Start()
     {
         StartCoroutine(Living());
+    }
+
+    private void OnDisable()
+    {
+        foreach (var siteCashRegister in _sitesCashRegister)
+        {
+            siteCashRegister.MakedCashRegister -= (cashRegister) => _cashesRegister.Add(cashRegister);
+        }
     }
 
     private void Buy(CashRegister cashRegister)
@@ -40,7 +64,7 @@ public class Bot : MonoBehaviour
 
             while (wadsMoneyOneGem.Sum(wad => wad.Amount) < gem.Price)
             {
-                wadsMoneyOneGem.Add(Instantiate(_template, transform.position, _template.transform.rotation));
+                wadsMoneyOneGem.Add(Instantiate(_templateMoney, cashRegister.transform.position + _offsetSpawnMoney, _templateMoney.transform.rotation));
                 wadsMoney.Enqueue(wadsMoneyOneGem[wadsMoneyOneGem.Count - 1]);
             }
 
@@ -62,16 +86,19 @@ public class Bot : MonoBehaviour
             }
             else if(indexNextAction == 1)
             {
-                CashRegister cashRegister = _cashesRegister[UnityEngine.Random.Range(0, _cashesRegister.Count)];
-
-                if (cashRegister.gameObject.activeSelf)
+                if(_cashesRegister.Count > 0)
                 {
-                    yield return StartCoroutine(Moving(cashRegister));
-                    bool isBuying = UnityEngine.Random.Range(0, 2) == 1;
+                    CashRegister cashRegister = _cashesRegister[UnityEngine.Random.Range(0, _cashesRegister.Count)];
 
-                    if (isBuying && cashRegister.CountGems > 0)
+                    if (cashRegister.gameObject.activeSelf)
                     {
-                        Buy(cashRegister);
+                        yield return StartCoroutine(Moving(cashRegister));
+                        bool isBuying = UnityEngine.Random.Range(0, 2) == 1;
+
+                        if (isBuying && cashRegister.CountGems > 0)
+                        {
+                            Buy(cashRegister);
+                        }
                     }
                 }
 

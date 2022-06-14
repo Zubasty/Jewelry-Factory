@@ -57,4 +57,6 @@ public class PlaceResourcesFactoryGems : MonoBehaviour, IObjectInteractive
     {
         _transmitter.Transferred -= () => EndedInterection?.Invoke(this);    
     }
+
+    public bool CanInterection(Player player) => player.HaveRocksInArms == false || player.LastRockInArms is Rock;
 }

@@ -13,18 +13,25 @@ public abstract class PlaceAbstractFactory<T> : MonoBehaviour, IObjectInteractiv
 
     public event Action<IObjectInteractive> EndedInterection;
 
+    public bool IsReady => _place.CountResources > 0;
+
     public void Add(T rock)
     {
         Queue<IResource> queue = new Queue<IResource>();
         queue.Enqueue(rock);
         _transmitter.Transfer(queue);
     }
+    
+    public void Install(T rock)
+    {
+        _place.Install(rock);
+    }
 
     public Queue<IResource> GiveAllResources() => _place.GiveResources();
 
     public void Interection(Player player)
     {
-        if (_place.CountResources > 0 && (player.HaveRocksInArms == false || player.LastRockInArms is T))
+        if (CanInterection(player))
         {
             player.TakeResources(this);
             player.TakedResources += OnTakedResources;
@@ -34,6 +41,8 @@ public abstract class PlaceAbstractFactory<T> : MonoBehaviour, IObjectInteractiv
             EndedInterection?.Invoke(this);
         }
     }
+
+    public bool CanInterection(Player player) => _place.CountResources > 0 && (player.HaveRocksInArms == false || player.LastRockInArms is T);
 
     private void OnTakedResources(Player player)
     {

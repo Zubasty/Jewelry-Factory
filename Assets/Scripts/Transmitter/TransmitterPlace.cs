@@ -1,19 +1,28 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TransmitterPlace : TransmitterAbstract
 {
     private PlaceForResource _place;
 
-    protected override Vector3 ActualPosition => _place.ActualPosition;
+    protected override List<Vector3> ActualPositions
+    {
+        get
+        {
+            List<Vector3> result = new List<Vector3>();
+            result.Add(_place.ActualPosition);
+            return result;
+        }
+    }
 
     private void OnEnable()
     {
-        ActionAfterStartInstall += Add;
+        ActionBeforeStartInstall += Add;
     }
 
     private void OnDisable()
     {
-        ActionAfterStartInstall -= Add;
+        ActionBeforeStartInstall -= Add;
     }
 
     public void Init(Mover mover, PlaceForResource place)

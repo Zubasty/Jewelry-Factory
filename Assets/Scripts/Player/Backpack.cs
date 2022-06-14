@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlaceForResource))]
-[RequireComponent(typeof(TransmitterPlace))]
+[RequireComponent(typeof(TransmitterPlaceFirstRow))]
 [RequireComponent(typeof(Mover))]
 public class Backpack : MonoBehaviour
 {
-    private TransmitterPlace _transmitter;
+    [SerializeField] private Transform _boneParent;
+
+    private TransmitterPlaceFirstRow _transmitter;
     private Mover _mover;
     private PlaceForResource _place;
 
     public event Action TakedWadsMoney;
+
+    public Vector3 MaxPosition
+    {
+        get;
+        private set;
+    }
+
+    public PointForResource FirstPoint => _place.FirstPoint;
 
     public int CountMoney
     {
@@ -34,19 +44,26 @@ public class Backpack : MonoBehaviour
     private void Awake()
     {
         _place = GetComponent<PlaceForResource>();
-        _transmitter = GetComponent<TransmitterPlace>();
         _mover = GetComponent<Mover>();
+        _transmitter = GetComponent<TransmitterPlaceFirstRow>();
         _transmitter.Init(_mover, _place);
     }
 
     private void OnEnable()
     {
-        _transmitter.Transferred += () => TakedWadsMoney?.Invoke();
+        _transmitter.Transferred += OnTransfferd;
     }
 
     private void OnDisable()
     {
-        _transmitter.Transferred -= () => TakedWadsMoney?.Invoke();
+        _transmitter.Transferred -= OnTransfferd;
+    }
+
+    public void OnTransfferd()
+    {
+        TakedWadsMoney?.Invoke();
+        transform.parent = _boneParent;
+        MaxPosition = new Vector3(_place.FirstPoint.transform.position.x, _place.ActualPosition.y, _place.FirstPoint.transform.position.z);
     }
 
     public void TakeWadsMoney(ListWadsMoney listWadsMoney) => _transmitter.Transfer(listWadsMoney.Place.GiveResources());

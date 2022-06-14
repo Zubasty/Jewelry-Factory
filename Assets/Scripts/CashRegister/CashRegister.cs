@@ -1,17 +1,20 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlaceForResource))]
 [RequireComponent(typeof(TransmitterPlace))]
 [RequireComponent(typeof(Mover))]
+[RequireComponent(typeof(SizeAnimation))]
 public class CashRegister : MonoBehaviour, IObjectInteractive
 {
-    [SerializeField] private PlaceForPay _placeForPay;
-
+    private PlaceForPay _placeForPay;
+    private SizeAnimation _animation;
     private PlaceForResource _place;
     private TransmitterPlace _transmitter;
     private Mover _mover;
+    private bool _isPreparing;
 
     public event Action<IObjectInteractive> EndedInterection;
 
@@ -19,22 +22,41 @@ public class CashRegister : MonoBehaviour, IObjectInteractive
 
     public bool IsFull => _place.CountResources == _place.CountPoints;
 
+    public bool IsReady => IsFull == false && _isPreparing == false;
+
     private void Awake()
     {
         _place = GetComponent<PlaceForResource>();
         _transmitter = GetComponent<TransmitterPlace>();
         _mover = GetComponent<Mover>();
+        _animation = GetComponent<SizeAnimation>();
         _transmitter.Init(_mover, _place);
     }
 
     private void OnEnable()
     {
         _transmitter.Transferred += () => EndedInterection?.Invoke(this);
+        _animation.EndedAnimation += () => _isPreparing = false;
+    }
+
+    private void Start()
+    {
+        _animation.StartAnimation(transform);
     }
 
     private void OnDisable()
     {
         _transmitter.Transferred -= () => EndedInterection?.Invoke(this);
+        _animation.EndedAnimation -= () => _isPreparing = false;
+    }
+
+    public bool CanInterection(Player player) => IsFull == false && _isPreparing == false && player.HaveRocksInArms && player.LastRockInArms is Gem;
+
+    public void Init(PlaceForPay placeForPay)
+    {
+        _placeForPay = placeForPay;
+        _placeForPay.transform.parent = transform;
+        _isPreparing = true;
     }
 
     public void Interection(Player player)

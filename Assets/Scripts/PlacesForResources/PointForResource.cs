@@ -13,6 +13,9 @@ public class PointForResource : MonoBehaviour
     public Vector3 ActualPosition => new Vector3(transform.position.x,
             transform.position.y + _offsetY * CountResourcesWithQueue, transform.position.z);
 
+    public Vector3 ActualPositionWithoutQueue => new Vector3(transform.position.x,
+        transform.position.y + _offsetY * CountResources, transform.position.z);
+
     public int CountResources => _resources.Count;
 
     public int CountResourcesWithQueue => _resources.Count + _queueResources.Count;

@@ -26,10 +26,10 @@ public class MoneyImage : MonoBehaviour
 
     private IEnumerator Ending(Image targetImage)
     {
-        while(targetImage.rectTransform.localPosition != _image.rectTransform.localPosition)
+        while(targetImage.rectTransform.position != _image.rectTransform.position)
         {
-            _image.rectTransform.localPosition = Vector3.MoveTowards(_image.rectTransform.localPosition, 
-                targetImage.rectTransform.localPosition, _speed * Time.deltaTime);
+            _image.rectTransform.position = Vector3.MoveTowards(_image.rectTransform.position, 
+                targetImage.rectTransform.position, _speed * Time.deltaTime);
             yield return null;
         }
 

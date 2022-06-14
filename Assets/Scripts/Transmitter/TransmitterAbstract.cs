@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class TransmitterAbstract : MonoBehaviour
+public abstract class TransmitterAbstract : MonoBehaviour, ITransmitter
 {
     [SerializeField] private float _delay;
     [SerializeField] private bool _isTakeAngle;
@@ -13,19 +13,19 @@ public abstract class TransmitterAbstract : MonoBehaviour
     private Queue<IResource> _resources;
     private List<IResource> _resourcesMoving;
 
-    protected Action<IResource> ActionAfterStartInstall;
+    protected Action<IResource> ActionBeforeStartInstall;
 
     public event Action<IResource> Installed;
     public event Action Transferred;
 
-    protected abstract Vector3 ActualPosition { get; }
+    protected abstract List<Vector3> ActualPositions { get; }
 
     protected Vector3? Angle
     {
         get
         {
             if (_isTakeAngle)
-                return _resultAngle + transform.rotation.eulerAngles;
+                return _resultAngle + transform.eulerAngles;
             else
                 return null;
         }
@@ -51,15 +51,15 @@ public abstract class TransmitterAbstract : MonoBehaviour
             if (_resources.Count > 0)
             {
                 IResource resource = _resources.Dequeue();
-                resource.StartInstall(_mover, ActualPosition, Angle.HasValue ? 
-                    Angle.Value : resource.Angle);
-                ActionAfterStartInstall?.Invoke(resource);
-                resource.Installed += EndTransfer;
                 _resourcesMoving.Add(resource);
+                resource.Installed += EndTransfer;
+                List<Vector3> actualPositions = ActualPositions;
+                ActionBeforeStartInstall?.Invoke(resource);
+                resource.StartInstall(_mover, actualPositions, Angle.HasValue ? 
+                    Angle.Value + resource.DefaultAngle.eulerAngles : resource.Angle);
                 _timeBeforeStartMove = _delay;
             }
         }
-
     }
 
     public void Init(Mover mover) => _mover = mover;

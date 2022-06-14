@@ -4,18 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Mover))]
-[RequireComponent(typeof(TransmitterPoint))]
+[RequireComponent(typeof(TransmitterWithMiddlePoint))]
 public class SiteCashRegister : MonoBehaviour, IObjectInteractive
 {
     [SerializeField] private int _price;
-    [SerializeField] private CashRegister _cashRegister;
+    [SerializeField] private CashRegister _cashRegisterTemplate;
     [SerializeField] private ParticleDestructible _particleTemplate;
+    [SerializeField] private PlaceForPay _placeForPay;
 
     private Mover _mover;
-    private TransmitterPoint _transmitter;
+    private TransmitterWithMiddlePoint _transmitter;
 
     public event Action<IObjectInteractive> EndedInterection;
     public event Action<SiteCashRegister> BoughtCashRegsiter;
+    public event Action<CashRegister> MakedCashRegister;
     public event Action<int> SetedPrice;
 
     public int Price
@@ -31,9 +33,7 @@ public class SiteCashRegister : MonoBehaviour, IObjectInteractive
     private void Awake()
     {
         _mover = GetComponent<Mover>();
-        _transmitter = GetComponent<TransmitterPoint>();
-        _transmitter.Init(_mover);
-        _cashRegister.gameObject.SetActive(false);
+        _transmitter = GetComponent<TransmitterWithMiddlePoint>();
     }
 
     private void OnEnable()
@@ -48,6 +48,8 @@ public class SiteCashRegister : MonoBehaviour, IObjectInteractive
         _transmitter.Installed -= OnInstalled;
     }
 
+    public bool CanInterection(Player player) => player.MoneyInBackpack >= Price;
+
     public void Interection(Player player)
     {
         player.Buy(this);
@@ -57,16 +59,24 @@ public class SiteCashRegister : MonoBehaviour, IObjectInteractive
     public void TakeWadsMoney(Backpack backpack)
     {
         if(backpack.CountMoney >= Price)
+        {
+            _transmitter.Init(_mover, backpack.MaxPosition.y, backpack.FirstPoint.transform);
             _transmitter.Transfer(backpack.GiveWadsMoney(Price));
+        }
         else
+        {
             EndedInterection?.Invoke(this);
+        }           
     }
 
     private void OnBoughtCashRegsiter(Player player)
     {
         player.BoughtCashRegsiter -= OnBoughtCashRegsiter;
         EndedInterection?.Invoke(this);
-        _cashRegister.gameObject.SetActive(true);
+        CashRegister cashRegister = Instantiate(_cashRegisterTemplate, new Vector3(transform.position.x, _cashRegisterTemplate.transform.position.y, 
+            transform.position.z), _cashRegisterTemplate.transform.rotation);
+        cashRegister.Init(_placeForPay);
+        MakedCashRegister?.Invoke(cashRegister);
         Instantiate(_particleTemplate, transform.position, _particleTemplate.transform.rotation);
         Destroy(gameObject);
     }

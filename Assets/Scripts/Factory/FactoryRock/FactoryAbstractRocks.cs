@@ -45,6 +45,15 @@ public abstract class FactoryAbstractRocks<T> : MonoBehaviour where T : RockAbst
     private void Start()
     {
         _timeBeforeSpawn = _cooldown;
+
+        foreach(var element in _elements)
+        {
+            for(int i = 0; i<element.StartCount; i++)
+            {
+                T rock = Instantiate(element.Template, _pointForSpawn.position, element.Template.transform.rotation);
+                element.Place.Install(rock);
+            }
+        }
     }
 
     private void Update()
