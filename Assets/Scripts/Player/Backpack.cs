@@ -66,7 +66,7 @@ public class Backpack : MonoBehaviour
         MaxPosition = new Vector3(_place.FirstPoint.transform.position.x, _place.ActualPosition.y, _place.FirstPoint.transform.position.z);
     }
 
-    public void TakeWadsMoney(ListWadsMoney listWadsMoney) => _transmitter.Transfer(listWadsMoney.Place.GiveResources());
+    public void TakeWadsMoney(StartupMoney listWadsMoney) => _transmitter.Transfer(listWadsMoney.Place.GiveResources());
 
     public Queue<IResource> GiveWadsMoney(int price)
     {

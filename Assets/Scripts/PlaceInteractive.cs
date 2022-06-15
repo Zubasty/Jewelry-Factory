@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlaceInteractive : MonoBehaviour
 {
     [SerializeField] private MonoBehaviour _objectInteractive;
+
     private IObjectInteractive ObjectInteractive => (IObjectInteractive)_objectInteractive;
 
     private void OnValidate()

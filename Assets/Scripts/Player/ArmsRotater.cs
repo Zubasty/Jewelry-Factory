@@ -7,6 +7,7 @@ using UnityEngine;
 public class ArmsRotater : MonoBehaviour
 {
     [SerializeField] private PlayerMover _mover;
+
     private Animator _animator;
 
     private void Awake()

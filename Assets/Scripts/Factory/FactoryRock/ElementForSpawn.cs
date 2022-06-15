@@ -10,11 +10,8 @@ public class ElementForSpawn<T> where T : RockAbstract
     [SerializeField] private PlaceAbstractFactory<T> _place;
 
     public int StartCount => _startCount;
-
     public T Template => _template;
-
     public float Weight => _weight;
-
     public PlaceAbstractFactory<T> Place => _place;
 
     public void OnValidate()

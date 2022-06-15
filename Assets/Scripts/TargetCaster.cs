@@ -7,7 +7,6 @@ public class TargetCaster : MonoBehaviour
     private Vector3 _targetPosition;
 
     public Vector3 Position => _targetPosition;
-
     public float Distance => _distanceForInteraction;
 
     private void Start()

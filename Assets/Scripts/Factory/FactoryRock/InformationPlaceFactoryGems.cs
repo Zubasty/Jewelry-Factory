@@ -10,6 +10,5 @@ public class InformationPlaceFactoryGems
     [SerializeField] private Image _icon;
 
     public TextMeshPro Text => _text;
-
     public Image Icon => _icon;
 }

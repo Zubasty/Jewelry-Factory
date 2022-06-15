@@ -13,9 +13,29 @@ public class PlayerAnimation : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
-    private void Update()
+    private void OnEnable()
+    {
+        _player.StartedMove += SetMove;
+        _player.StoppedMove += SetMove;
+        _player.TakedResources += (player) => SetCarry();
+        _player.DroppedResources += SetCarry;
+    }
+
+    private void OnDisable()
+    {
+        _player.StartedMove -= SetMove;
+        _player.StoppedMove -= SetMove;
+        _player.TakedResources -= (player) => SetCarry();
+        _player.DroppedResources -= SetCarry;
+    }
+
+    private void SetMove()
     {
         _animator.SetBool(AnimatorPlayer.Params.Walk, _player.IsMove);
+    }
+
+    private void SetCarry()
+    {
         _animator.SetBool(AnimatorPlayer.Params.Carry, _player.HaveRocksInArms);
     }
 }

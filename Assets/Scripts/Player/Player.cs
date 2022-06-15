@@ -17,20 +17,15 @@ public class Player : MonoBehaviour
     public event Action<Player> BoughtCashRegsiter;
     public event Action<Player> TakedResources;
     public event Action<Player> TakedMoney;
+    public event Action StartedMove;
+    public event Action StoppedMove;
+    public event Action DroppedResources;
 
     public bool IsMove => _mover.IsMove;
-
     public bool HaveRocksInArms => _arms.HaveRocks;
-
     public int MoneyInBackpack => _backpack.CountMoney;
-
     public bool IsBusy { get; private set; }
-
     public IRock LastRockInArms => _arms.GetLastRock();
-
-    public Queue<IRock> GiveResourcesFromArms(int count) => _arms.GiveRocks(count);
-
-    public Queue<IRock> GiveResourcesFromArms() => _arms.GiveRocks();
 
     private void Awake()
     {
@@ -42,11 +37,17 @@ public class Player : MonoBehaviour
     private void OnEnable()
     {
         _mover.Finished += OnFinished;
+        _mover.StartedMove += () => StartedMove?.Invoke();
+        _mover.StoppedMove += () => StoppedMove?.Invoke();
+        _arms.DroppedResources += () => DroppedResources?.Invoke();
     }
 
     private void OnDisable()
     {
         _mover.Finished -= OnFinished;
+        _mover.StartedMove -= () => StartedMove?.Invoke();
+        _mover.StoppedMove -= () => StoppedMove?.Invoke();
+        _arms.DroppedResources -= () => DroppedResources?.Invoke();
     }
 
     private void Update()
@@ -71,7 +72,7 @@ public class Player : MonoBehaviour
         site.BoughtCashRegsiter += OnBoughtCashRegsiter;
     }
 
-    public void TakeWadsMoney(ListWadsMoney listWadsMoney)
+    public void TakeWadsMoney(StartupMoney listWadsMoney)
     {
         _backpack.TakeWadsMoney(listWadsMoney);
         _backpack.TakedWadsMoney += OnTakedWadsMoney;
@@ -136,4 +137,9 @@ public class Player : MonoBehaviour
         owner.EndedInterection -= OnEndedInteraction;
         IsBusy = false;
     }
+
+    public Queue<IRock> GiveResourcesFromArms(int count) => _arms.GiveRocks(count);
+
+    public Queue<IRock> GiveResourcesFromArms() => _arms.GiveRocks();
+
 }

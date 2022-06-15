@@ -17,6 +17,24 @@ public class Arms : MonoBehaviour
 
     public bool HaveRocks => _place.CountResources > 0;
 
+    private void Awake()
+    {
+        _place = GetComponent<PlaceForResource>();
+        _transmitter = GetComponent<TransmitterPlace>();
+        _mover = GetComponent<Mover>();
+        _transmitter.Init(_mover, _place);
+    }
+
+    private void OnEnable()
+    {
+        _transmitter.Transferred += () => TakedResources?.Invoke();
+    }
+
+    private void OnDisable()
+    {
+        _transmitter.Transferred -= () => TakedResources?.Invoke();
+    }
+
     public Queue<IRock> GiveRocks(int count)
     {
         Queue<IRock> rocks = new Queue<IRock>();
@@ -50,23 +68,5 @@ public class Arms : MonoBehaviour
     {
         StartedTakeResources?.Invoke();
         _transmitter.Transfer(place.GiveAllResources());
-    }
-
-    private void Awake()
-    {
-        _place = GetComponent<PlaceForResource>();
-        _transmitter = GetComponent<TransmitterPlace>();
-        _mover = GetComponent<Mover>();
-        _transmitter.Init(_mover, _place);
-    }
-
-    private void OnEnable()
-    {
-        _transmitter.Transferred += () => TakedResources?.Invoke();
-    }
-
-    private void OnDisable()
-    {
-        _transmitter.Transferred -= () => TakedResources?.Invoke();
     }
 }

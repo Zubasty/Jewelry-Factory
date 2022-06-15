@@ -10,6 +10,14 @@ public class StandFactoryGem : MonoBehaviour
     private Mover _mover;
     private PlaceForResource _place;
 
+    private void Awake()
+    {
+        _transmitter = GetComponent<TransmitterPlace>();
+        _mover = GetComponent<Mover>();
+        _place = GetComponent<PlaceForResource>();
+        _transmitter.Init(_mover, _place);
+    }
+
     public void Add(IResource resource)
     {
         Queue<IResource> queue = new Queue<IResource>();
@@ -18,12 +26,4 @@ public class StandFactoryGem : MonoBehaviour
     }
 
     public IResource GiveResource() => _place.GiveResources(1).Dequeue();
-
-    private void Awake()
-    {
-        _transmitter = GetComponent<TransmitterPlace>();
-        _mover = GetComponent<Mover>();
-        _place = GetComponent<PlaceForResource>();
-        _transmitter.Init(_mover, _place);
-    }
 }

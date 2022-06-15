@@ -19,9 +19,7 @@ public class CashRegister : MonoBehaviour, IObjectInteractive
     public event Action<IObjectInteractive> EndedInterection;
 
     public int CountGems => _place.CountResources;
-
     public bool IsFull => _place.CountResources == _place.CountPoints;
-
     public bool IsReady => IsFull == false && _isPreparing == false;
 
     private void Awake()

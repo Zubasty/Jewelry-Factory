@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PlaceForResource))]
-public class ListWadsMoney : MonoBehaviour, IObjectInteractive
+public class StartupMoney : MonoBehaviour, IObjectInteractive
 {
     [SerializeField] private WadMoney _template;
     [SerializeField] private int _count;

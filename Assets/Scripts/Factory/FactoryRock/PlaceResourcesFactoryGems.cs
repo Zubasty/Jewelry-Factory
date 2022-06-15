@@ -15,6 +15,24 @@ public class PlaceResourcesFactoryGems : MonoBehaviour, IObjectInteractive
 
     public bool HaveResources => _place.CountResources > 0;
 
+    private void Awake()
+    {
+        _place = GetComponent<PlaceForResource>();
+        _transmitter = GetComponent<TransmitterPlace>();
+        _mover = GetComponent<Mover>();
+        _transmitter.Init(_mover, _place);
+    }
+
+    private void OnEnable()
+    {
+        _transmitter.Transferred += () => EndedInterection?.Invoke(this);
+    }
+
+    private void OnDisable()
+    {
+        _transmitter.Transferred -= () => EndedInterection?.Invoke(this);
+    }
+
     public void Interection(Player player)
     {
         if(player.HaveRocksInArms && player.LastRockInArms is Rock)
@@ -38,24 +56,6 @@ public class PlaceResourcesFactoryGems : MonoBehaviour, IObjectInteractive
     public IResource GiveResource()
     {
         return _place.GiveResources(1).Dequeue();
-    }
-
-    private void Awake()
-    {
-        _place = GetComponent<PlaceForResource>();
-        _transmitter = GetComponent<TransmitterPlace>();
-        _mover = GetComponent<Mover>();
-        _transmitter.Init(_mover, _place);
-    }
-
-    private void OnEnable()
-    {
-        _transmitter.Transferred += () => EndedInterection?.Invoke(this);
-    }
-
-    private void OnDisable()
-    {
-        _transmitter.Transferred -= () => EndedInterection?.Invoke(this);    
     }
 
     public bool CanInterection(Player player) => player.HaveRocksInArms == false || player.LastRockInArms is Rock;

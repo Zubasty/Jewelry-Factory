@@ -18,6 +18,7 @@ public class Bot : MonoBehaviour
     [SerializeField] private float _speed;
     [SerializeField] private int _minCountBuy;
     [SerializeField] private int _maxCountBuy;
+    [SerializeField, Range(0, 1)] private float _probablityBuy;
     [SerializeField] private Vector3 _offsetSpawnMoney;
     [SerializeField] private WadMoney _templateMoney;
 
@@ -93,7 +94,7 @@ public class Bot : MonoBehaviour
                     if (cashRegister.gameObject.activeSelf)
                     {
                         yield return StartCoroutine(Moving(cashRegister));
-                        bool isBuying = UnityEngine.Random.Range(0, 2) == 1;
+                        bool isBuying = UnityEngine.Random.value <= _probablityBuy;
 
                         if (isBuying && cashRegister.CountGems > 0)
                         {

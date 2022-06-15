@@ -8,11 +8,8 @@ public class PlaceForResource : MonoBehaviour
     [SerializeField] private List<PointForResource> _points;
 
     public int CountResources => _points.Sum(point => point.CountResources);
-
     public int CountPoints => _points.Count;
-
     public Vector3 ActualPosition => PointForAdd.ActualPosition;
-
     public PointForResource FirstPoint => _points[0];
 
     public IReadOnlyList<IResource> Resources

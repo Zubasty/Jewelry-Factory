@@ -7,7 +7,6 @@ public class FactoryGems : FactoryAbstractRocks<Gem>
     private StandFactoryGem _stand;
 
     protected override bool CanSpawn => _placeResources.HaveResources;
-
     public bool HaveResources => _placeResources.HaveResources;
 
     protected override void OnValidate()

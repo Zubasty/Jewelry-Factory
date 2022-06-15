@@ -7,9 +7,7 @@ public abstract class ResourceAbstract : MonoBehaviour, IResource
     public event Action<IResource> Installed;
 
     public Vector3 Position => transform.position;
-
     public Vector3 Angle => transform.rotation.eulerAngles;
-
     public Quaternion DefaultAngle { get; private set; }
 
     private void Start()

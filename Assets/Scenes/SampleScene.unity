@@ -1207,6 +1207,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
       objectReference: {fileID: 1186500514}
@@ -1283,6 +1287,10 @@ PrefabInstance:
       propertyPath: _template
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
@@ -1636,6 +1644,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
       objectReference: {fileID: 1186500514}
@@ -1968,7 +1980,7 @@ GameObject:
   - component: {fileID: 688955831}
   - component: {fileID: 688955832}
   m_Layer: 0
-  m_Name: ListWadsPoint
+  m_Name: StartupMoney
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2024,7 +2036,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 688955827}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 288466b5b8b9bd04f8b7db644f998f6b, type: 3}
+  m_Script: {fileID: 11500000, guid: 145f69aedc7b8dc4691ddaaace69f215, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _template: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
@@ -2663,6 +2675,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
       objectReference: {fileID: 1186500514}
@@ -3181,6 +3197,10 @@ PrefabInstance:
       propertyPath: _template
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
@@ -3978,6 +3998,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
       objectReference: {fileID: 1186500514}
@@ -4567,6 +4591,10 @@ PrefabInstance:
       propertyPath: _template
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 
@@ -5728,6 +5756,10 @@ PrefabInstance:
       propertyPath: _template
       value: 
       objectReference: {fileID: -3391945235363629882, guid: e107d0d57a99249458f57c829613cbf3, type: 3}
+    - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
+      propertyPath: _probablityBuy
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 2902125277758122650, guid: 67c97353a796975409a881fadc8edd20, type: 3}
       propertyPath: _sitesCashRegister.Array.data[0]
       value: 

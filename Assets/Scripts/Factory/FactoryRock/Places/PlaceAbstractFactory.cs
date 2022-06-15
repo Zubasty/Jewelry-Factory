@@ -15,6 +15,14 @@ public abstract class PlaceAbstractFactory<T> : MonoBehaviour, IObjectInteractiv
 
     public bool IsReady => _place.CountResources > 0;
 
+    private void Awake()
+    {
+        _place = GetComponent<PlaceForResource>();
+        _mover = GetComponent<Mover>();
+        _transmitter = GetComponent<TransmitterPlace>();
+        _transmitter.Init(_mover, _place);
+    }
+
     public void Add(T rock)
     {
         Queue<IResource> queue = new Queue<IResource>();
@@ -48,13 +56,5 @@ public abstract class PlaceAbstractFactory<T> : MonoBehaviour, IObjectInteractiv
     {
         player.TakedResources -= OnTakedResources;
         EndedInterection?.Invoke(this);
-    }
-
-    private void Awake()
-    {
-        _place = GetComponent<PlaceForResource>();
-        _mover = GetComponent<Mover>();
-        _transmitter = GetComponent<TransmitterPlace>();
-        _transmitter.Init(_mover, _place);
     }
 }

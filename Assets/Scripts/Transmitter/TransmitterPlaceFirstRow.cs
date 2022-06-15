@@ -16,6 +16,7 @@ public class TransmitterPlaceFirstRow : TransmitterAbstract
             return result;
         }
     }
+
     private void OnEnable()
     {
         ActionBeforeStartInstall += Add;

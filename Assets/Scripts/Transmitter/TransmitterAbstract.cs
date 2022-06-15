@@ -32,7 +32,6 @@ public abstract class TransmitterAbstract : MonoBehaviour, ITransmitter
     } 
 
     protected float Delay => _delay;
-
     public bool IsFree => _resources.Count == 0 && _resourcesMoving.Count == 0;
 
     private void Awake()
